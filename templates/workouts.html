@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Workouts</title>
+</head>
+<body>
+    <h1>Logged Workouts</h1>
+    <ul>
+        {% for workout in workouts %}
+            <li>{{ workout.workout }} - {{ workout.duration }} minutes</li>
+        {% endfor %}
+    </ul>
+    <a href="{{ url_for('index') }}">Back to Home</a>
+</body>
+</html>
