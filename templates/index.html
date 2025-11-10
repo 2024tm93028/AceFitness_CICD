@@ -2,25 +2,28 @@
 <html>
 <head>
     <title>ACEestFitness and Gym</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
-    <h1>ACEestFitness and Gym</h1>
-    {% if error %}
-        <p style="color:red;">{{ error }}</p>
-    {% endif %}
-    <form method="post">
-        <label for="workout">Workout:</label><br>
-        <input type="text" id="workout" name="workout"><br><br>
-        <label for="duration">Duration (minutes):</label><br>
-        <input type="text" id="duration" name="duration"><br><br>
-        <button type="submit">Add Workout</button>
-    </form>
-    <h2>Logged Workouts:</h2>
-    <ul>
-        {% for workout in workouts %}
-            <li>{{ workout.workout }} - {{ workout.duration }} minutes</li>
-        {% endfor %}
-    </ul>
-    <a href="{{ url_for('view_workouts') }}">View All Workouts</a>
+    <div class="container">
+        <h1>ACEestFitness and Gym</h1>
+        {% if error %}
+            <p class="error">{{ error }}</p>
+        {% endif %}
+        <form method="post">
+            <label for="workout">Workout:</label>
+            <input type="text" id="workout" name="workout">
+            <label for="duration">Duration (minutes):</label>
+            <input type="text" id="duration" name="duration">
+            <button type="submit">Add Workout</button>
+        </form>
+        <h2>Logged Workouts:</h2>
+        <ul>
+            {% for workout in workouts %}
+                <li>{{ workout.workout }} - {{ workout.duration }} minutes</li>
+            {% endfor %}
+        </ul>
+        <a href="{{ url_for('view_workouts') }}">View All Workouts</a>
+    </div>
 </body>
 </html>

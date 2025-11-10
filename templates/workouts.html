@@ -2,14 +2,17 @@
 <html>
 <head>
     <title>Workouts</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
-    <h1>Logged Workouts</h1>
-    <ul>
-        {% for workout in workouts %}
-            <li>{{ workout.workout }} - {{ workout.duration }} minutes</li>
-        {% endfor %}
-    </ul>
-    <a href="{{ url_for('index') }}">Back to Home</a>
+    <div class="container">
+        <h1>Logged Workouts</h1>
+        <ul>
+            {% for workout in workouts %}
+                <li>{{ workout.workout }} - {{ workout.duration }} minutes</li>
+            {% endfor %}
+        </ul>
+        <a href="{{ url_for('index') }}">Back to Home</a>
+    </div>
 </body>
 </html>
