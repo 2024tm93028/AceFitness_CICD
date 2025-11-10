@@ -10,7 +10,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 // Get the code from your Git repository
-                git 'https://github.com/2024tm93028/AceFitness_CICD.git'
+                git branch: 'main', 'https://github.com/2024tm93028/AceFitness_CICD.git'
             }
         }
 
