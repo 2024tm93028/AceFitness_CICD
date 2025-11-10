@@ -10,7 +10,7 @@ pipeline {
         stage('Checkout') {
             steps {
                 // Get the code from your Git repository
-                git branch: 'main', 'https://github.com/2024tm93028/AceFitness_CICD.git'
+                git branch: 'main', url: 'https://github.com/2024tm93028/AceFitness_CICD.git'
             }
         }
 
@@ -29,6 +29,8 @@ pipeline {
                 // Apply the Kubernetes configurations
                 sh 'kubectl apply -f k8s/deployment.yaml'
                 sh 'kubectl apply -f k8s/service.yaml'
+                sh 'kubectl apply -f deployment.yaml'
+                sh 'kubectl apply -f service.yaml'
                 sh 'kubectl rollout status deployment/fitness-app-deployment'
             }
         }
