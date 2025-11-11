@@ -11,8 +11,8 @@ pipeline {
             steps {
                 script {
                     // Use Minikube's Docker daemon
-                    sh 'eval $(minikube -p minikube docker-env)'
-                    sh "docker build -t ${IMAGE_NAME} ."
+                    bat 'eval $(minikube -p minikube docker-env)'
+                    bat "docker build -t ${IMAGE_NAME} ."
                 }
             }
         }
@@ -20,9 +20,9 @@ pipeline {
         stage('Deploy to Minikube') {
             steps {
                 // Apply the Kubernetes configurations
-                sh 'kubectl apply -f deployment.yaml'
-                sh 'kubectl apply -f service.yaml'
-                sh 'kubectl rollout status deployment/fitness-app-deployment'
+                bat 'kubectl apply -f deployment.yaml'
+                bat 'kubectl apply -f service.yaml'
+                bat 'kubectl rollout status deployment/fitness-app-deployment'
             }
         }
     }
