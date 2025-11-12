@@ -7,6 +7,20 @@ pipeline {
     }
 
     stages {
+
+        stage('SonarQube Scan') {
+            steps {
+                script {
+                    // This assumes you have the "SonarQube Scanner for Jenkins" plugin installed,
+                    // a SonarQube server configured in Jenkins, and a sonar-project.properties file in your project root.
+                    // Replace 'your-sonarqube-server-name' with the name of your SonarQube server configuration in Jenkins.
+                    withSonarQubeEnv('your-sonarqube-server-name') {
+                        bat 'sonar-scanner'
+                    }
+                }
+            }
+        }
+        
         stage('Build Docker Image') {
             steps {
                 script {
