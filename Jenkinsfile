@@ -15,7 +15,7 @@ pipeline {
                     // a SonarQube server configured in Jenkins, and a sonar-project.properties file in your project root.
                     // Replace 'your-sonarqube-server-name' with the name of your SonarQube server configuration in Jenkins.
                     withSonarQubeEnv('SonarLocalConfig') {
-                        bat 'sonar-scanner'
+                        bat "${tool 'SonarQubeScanner'}/bin/sonar-scanner"
                     }
                 }
             }
