@@ -5,9 +5,15 @@ import base64
 from matplotlib.figure import Figure
 
 
+import io
+import base64
+from matplotlib.figure import Figure
+
+
 
 app = Flask(__name__)
 app.secret_key = 'supersecretkey'  # Needed for flashing messages and session
+
 
 @app.before_request
 def before_request():
@@ -16,6 +22,7 @@ def before_request():
 
 @app.route("/", methods=["GET", "POST"])
 def index():
+
     if request.method == "POST":
         category = request.form.get("category")
         exercise = request.form.get("workout", "").strip()
@@ -23,6 +30,7 @@ def index():
 
         if not exercise or not duration_str or not category:
             flash("Error: Please fill all fields.", "error")
+
             return redirect(url_for('index'))
 
         try:
@@ -30,6 +38,7 @@ def index():
             if duration <= 0:
                 flash("Error: Duration must be a positive number.", "error")
                 return redirect(url_for('index'))
+
         except ValueError:
             flash("Error: Duration must be a valid number.", "error")
             return redirect(url_for('index'))
@@ -40,10 +49,12 @@ def index():
             "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         }
         g.workouts[category].append(entry) # Append to the global workouts
+
         session['workouts'] = g.workouts  # Save the updated workouts back to session
 
         flash(f"Success: '{exercise}' added to {category}!", "success")
         return redirect(url_for('index'))
+
 
     # For a GET request, calculate summary
     total_time = sum(e['duration'] for sessions in g.workouts.values() for e in sessions)
@@ -55,10 +66,12 @@ def index():
     else:
         motivational_note = "Excellent dedication! Keep up the great work 🏆"
 
+
     return render_template("index.html",
                            workouts=g.workouts, # Pass g.workouts to the template
                            total_time=total_time,
                            motivational_note=motivational_note)
+
 
 @app.route("/workout-chart")
 def workout_chart():
@@ -70,6 +83,7 @@ def workout_chart():
     }
     return render_template("workout_chart.html", chart_data=chart_data)
 
+
 @app.route("/diet-chart")
 def diet_chart():
     """Displays a diet chart for different fitness goals."""
@@ -80,6 +94,7 @@ def diet_chart():
     }
     return render_template("diet_chart.html", diet_plans=diet_plans)
 
+
 @app.route("/progress-tracker")
 def progress_tracker():
     """Displays a summary of workout progress, similar to the Tkinter app's progress tab."""
@@ -89,6 +104,7 @@ def progress_tracker():
     # Determine motivational note based on total time
     total_overall_time = sum(totals.values())
     
+
     chart_image = None
     if total_overall_time > 0:
         # --- Generate Chart ---
@@ -97,6 +113,7 @@ def progress_tracker():
 
         # Bar Chart
         ax1 = fig.add_subplot(121)
+
         ax1.bar(totals.keys(), totals.values(), color=colors)
         ax1.set_title("Time per Category (Min)", fontsize=10)
         ax1.set_ylabel("Total Minutes", fontsize=8)
@@ -105,6 +122,7 @@ def progress_tracker():
 
         # Pie Chart
         ax2 = fig.add_subplot(122)
+
         pie_labels = [k for k, v in totals.items() if v > 0]
         pie_values = [v for v in totals.values() if v > 0]
         pie_colors = [colors[i] for i, v in enumerate(totals.values()) if v > 0]
@@ -119,6 +137,7 @@ def progress_tracker():
         fig.savefig(buf, format="png")
         chart_image = base64.b64encode(buf.getbuffer()).decode("ascii")
 
+
     # Motivational Note Logic
     if total_overall_time == 0:
         motivational_note = "Log a session to see your progress!"
@@ -129,11 +148,13 @@ def progress_tracker():
     else:
         motivational_note = "Excellent dedication! Keep up the great work 🏆"
 
+
     return render_template("progress_tracker.html",
                            totals=totals,
                            motivational_note=motivational_note,
                            total_overall_time=total_overall_time,
                            chart_image=chart_image)
+
 
 if __name__ == "__main__":
     # Host must be '0.0.0.0' to be accessible from outside the container

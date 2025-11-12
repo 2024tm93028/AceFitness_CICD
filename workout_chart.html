@@ -7,7 +7,7 @@
     {% for category, exercises in chart_data.items() %}
         <h3>🔥 {{ category }}</h3>
         <ul class="chart-list">
-            {% for ex in exercises %}<li>   • {{ ex }}</li>{% endfor %}
+            {% for ex in exercises %}<li> • {{ ex }}</li>{% endfor %}
         </ul>
     {% endfor %}
 {% endblock %}
