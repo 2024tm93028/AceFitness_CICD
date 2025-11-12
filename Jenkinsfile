@@ -6,10 +6,6 @@ pipeline {
         IMAGE_NAME = 'fitness-app:latest'
     }
 
-    tools {
-    sonarQube 'SonarQubeScanner'
-}
-
     stages {
 
         stage('SonarQube Scan') {
