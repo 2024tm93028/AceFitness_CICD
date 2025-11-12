@@ -17,7 +17,7 @@ This is a simple Flask web application to track workouts.
 
 3.  **Run the Flask app:**
     ```bash
-    python ACEest_Fitness.py
+    python app.py
     ```
     The application will be available at `http://127.0.0.1:5000`.
 

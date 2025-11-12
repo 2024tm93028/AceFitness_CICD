@@ -19,32 +19,32 @@ pipeline {
     stages {
         stage('Install Dependencies') {
             steps {
-                bat'python -m venv venv'
-                bat'source venv/bin/activate && pip install -r requirements.txt'
+                sh 'python -m venv venv'
+                sh '. venv/bin/activate && pip install -r requirements.txt'
             }
         }
 
         stage('Run Tests') {
             steps {
-                bat'source venv/bin/activate && pytest'
+                sh '. venv/bin/activate && pytest'
             }
         }
 
         stage('SonarQube Analysis') {
             steps {
-                bat"sonar-scanner -Dsonar.projectKey=flask-app -Dsonar.sources=. -Dsonar.host.url=${SONAR_HOST_URL} -Dsonar.login=${SONAR_LOGIN}"
+                sh "sonar-scanner -Dsonar.projectKey=flask-app -Dsonar.sources=. -Dsonar.host.url=${SONAR_HOST_URL} -Dsonar.login=${SONAR_LOGIN}"
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                bat'docker build -t flask-app:latest .'
+                sh 'docker build -t flask-app:latest .'
             }
         }
 
         stage('Deploy to Minikube') {
             steps {
-                bat'kubectl apply -f kubernetes/'
+                sh 'kubectl apply -f kubernetes/'
             }
         }
     }

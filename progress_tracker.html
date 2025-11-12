@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block title %}Progress Tracker - ACEestFitness{% endblock %}
+
+{% block content %}
+    <h1>📈 Personal Progress Tracker (Minutes Logged)</h1>
+
+    {% if chart_image %}
+    <div style="text-align: center; margin-bottom: 20px;">
+        <img src="data:image/png;base64,{{ chart_image }}" alt="Workout Progress Chart">
+    </div>
+    {% else %}
+    <p style="text-align: center; font-style: italic; margin: 40px 0;">No workout data logged yet. Log a session to see your progress!</p>
+    {% endif %}
+
+    <div class="summary">
+        <p><strong>Overall Total Time Spent:</strong> {{ total_overall_time }} minutes</p>
+        <p><em>{{ motivational_note }}</em></p>
+    </div>
+{% endblock %}

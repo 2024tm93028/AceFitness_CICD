@@ -12,4 +12,4 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Run the application
-CMD ["python", "ACEest_Fitness.py"]
+CMD ["python", "app.py"]
