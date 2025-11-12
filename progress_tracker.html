@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block title %}Progress Tracker - ACEestFitness{% endblock %}
+
+{% block content %}
+    <h1>📈 Personal Progress Tracker</h1>
+    <p>Here's a summary of your workout progress:</p>
+
+    <ul class="chart-list">
+        {% for category, total_duration in totals.items() %}
+            <li><strong>{{ category }}:</strong> {{ total_duration }} minutes</li>
+        {% endfor %}
+    </ul>
+
+    <div class="summary">
+        <p><strong>Overall Total Time Spent:</strong> {{ total_overall_time }} minutes</p>
+        <p><em>{{ motivational_note }}</em></p>
+    </div>
+{% endblock %}

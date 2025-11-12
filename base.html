@@ -86,6 +86,7 @@
         <a href="{{ url_for('index') }}" class="{{ 'active' if request.endpoint == 'index' else '' }}">🏋️ Log Workouts</a>
         <a href="{{ url_for('workout_chart') }}" class="{{ 'active' if request.endpoint == 'workout_chart' else '' }}">📊 Workout Chart</a>
         <a href="{{ url_for('diet_chart') }}" class="{{ 'active' if request.endpoint == 'diet_chart' else '' }}">🥗 Diet Chart</a>
+        <a href="{{ url_for('progress_tracker') }}" class="{{ 'active' if request.endpoint == 'progress_tracker' else '' }}">📈 Progress Tracker</a>
     </div>
 
     <div class="content-wrapper">

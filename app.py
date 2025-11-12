@@ -11,14 +11,12 @@ def before_request():
 
 @app.route("/", methods=["GET", "POST"])
 def index():
-    workouts = session.get('workouts')
-
     if request.method == "POST":
         category = request.form.get("category")
         exercise = request.form.get("workout", "").strip()
         duration_str = request.form.get("duration", "").strip()
 
-        if not workout or not duration_str or not category:
+        if not exercise or not duration_str or not category:
             flash("Error: Please fill all fields.", "error")
             return redirect(url_for('index'))
 
@@ -36,10 +34,10 @@ def index():
             "duration": duration,
             "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         }
-        g.workouts[category].append(entry)
-        session['workouts'] = workouts  # Save back to session
+        g.workouts[category].append(entry) # Append to the global workouts
+        session['workouts'] = g.workouts  # Save the updated workouts back to session
 
-        flash(f"Success: '{workout}' added to {category}!", "success")
+        flash(f"Success: '{exercise}' added to {category}!", "success")
         return redirect(url_for('index'))
 
     # For a GET request, calculate summary
@@ -53,7 +51,7 @@ def index():
         motivational_note = "Excellent dedication! Keep up the great work 🏆"
 
     return render_template("index.html",
-                           workouts=g.workouts,
+                           workouts=g.workouts, # Pass g.workouts to the template
                            total_time=total_time,
                            motivational_note=motivational_note)
 
@@ -76,6 +74,26 @@ def diet_chart():
         "Endurance": ["Banana & Peanut Butter", "Whole Grain Pasta", "Sweet Potatoes", "Salmon & Avocado", "Trail Mix"]
     }
     return render_template("diet_chart.html", diet_plans=diet_plans)
+
+@app.route("/progress-tracker")
+def progress_tracker():
+    """Displays a summary of workout progress, similar to the Tkinter app's progress tab."""
+    # g.workouts is already populated by before_request
+    totals = {cat: sum(entry['duration'] for entry in sessions) for cat, sessions in g.workouts.items()}
+
+    # Determine motivational note based on total time, similar to index
+    total_overall_time = sum(totals.values())
+    if total_overall_time < 30:
+        motivational_note = "Good start! Keep moving 💪"
+    elif total_overall_time < 60:
+        motivational_note = "Nice effort! You're building consistency 🔥"
+    else:
+        motivational_note = "Excellent dedication! Keep up the great work 🏆"
+
+    return render_template("progress_tracker.html",
+                           totals=totals,
+                           motivational_note=motivational_note,
+                           total_overall_time=total_overall_time)
 
 if __name__ == "__main__":
     # Host must be '0.0.0.0' to be accessible from outside the container
