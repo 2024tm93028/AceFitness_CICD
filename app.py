@@ -1,10 +1,6 @@
 from flask import Flask, render_template, request, flash, redirect, url_for, session, g
 from datetime import datetime
 import io
-import base64
-from matplotlib.figure import Figure
-
-
 import io
 import base64
 from matplotlib.figure import Figure
@@ -31,12 +27,14 @@ def index():
         if not exercise or not duration_str or not category:
             flash("Error: Please fill all fields.", "error")
 
+
             return redirect(url_for('index'))
 
         try:
             duration = int(duration_str)
             if duration <= 0:
                 flash("Error: Duration must be a positive number.", "error")
+
                 return redirect(url_for('index'))
 
         except ValueError:
@@ -51,6 +49,7 @@ def index():
         g.workouts[category].append(entry) # Append to the global workouts
 
         session['workouts'] = g.workouts  # Save the updated workouts back to session
+
 
         flash(f"Success: '{exercise}' added to {category}!", "success")
         return redirect(url_for('index'))
@@ -70,6 +69,7 @@ def index():
     return render_template("index.html",
                            workouts=g.workouts, # Pass g.workouts to the template
                            total_time=total_time,
+
                            motivational_note=motivational_note)
 
 
@@ -84,6 +84,7 @@ def workout_chart():
     return render_template("workout_chart.html", chart_data=chart_data)
 
 
+
 @app.route("/diet-chart")
 def diet_chart():
     """Displays a diet chart for different fitness goals."""
@@ -95,6 +96,7 @@ def diet_chart():
     return render_template("diet_chart.html", diet_plans=diet_plans)
 
 
+
 @app.route("/progress-tracker")
 def progress_tracker():
     """Displays a summary of workout progress, similar to the Tkinter app's progress tab."""
@@ -103,6 +105,7 @@ def progress_tracker():
 
     # Determine motivational note based on total time
     total_overall_time = sum(totals.values())
+
     
 
     chart_image = None
@@ -114,6 +117,7 @@ def progress_tracker():
         # Bar Chart
         ax1 = fig.add_subplot(121)
 
+
         ax1.bar(totals.keys(), totals.values(), color=colors)
         ax1.set_title("Time per Category (Min)", fontsize=10)
         ax1.set_ylabel("Total Minutes", fontsize=8)
@@ -122,6 +126,7 @@ def progress_tracker():
 
         # Pie Chart
         ax2 = fig.add_subplot(122)
+
 
         pie_labels = [k for k, v in totals.items() if v > 0]
         pie_values = [v for v in totals.values() if v > 0]
@@ -136,6 +141,7 @@ def progress_tracker():
         buf = io.BytesIO()
         fig.savefig(buf, format="png")
         chart_image = base64.b64encode(buf.getbuffer()).decode("ascii")
+
 
 
     # Motivational Note Logic
