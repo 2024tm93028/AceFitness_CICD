@@ -1,6 +1,5 @@
 pipeline {
     agent any
-
     stages {
         stage('Build') {
             steps {
@@ -14,16 +13,15 @@ pipeline {
         }
         stage('SonarQube Analysis') {
             steps {
-                // Assuming SonarQube Scanner CLI is installed and configured
                 withSonarQubeEnv('LocalSonarQube') {
-                    bat 'sonar-scanner'
+                    sh 'sonar-scanner'
                 }
             }
         }
         stage('Deploy to Minikube') {
             steps {
-                bat 'kubectl apply -f kubernetes/deployment.yaml'
-                bat 'kubectl apply -f kubernetes/service.yaml'
+                sh 'kubectl apply -f kubernetes/deployment.yaml'
+                sh 'kubectl apply -f kubernetes/service.yaml'
             }
         }
     }
