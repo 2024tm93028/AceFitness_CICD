@@ -1,63 +1,160 @@
-from flask import Flask, render_template, request, flash, redirect, url_for, session
+import tkinter as tk
+from tkinter import messagebox, ttk
 from datetime import datetime
 
-app = Flask(__name__)
-app.secret_key = 'supersecretkey'  # Needed for flashing messages and session
+class FitnessTrackerApp:
+    def __init__(self, master):
+        self.master = master
+        master.title("ACEest Fitness & Gym Tracker")
+        master.geometry("650x600")
+        master.resizable(False, False)
 
-@app.before_request
-def initialize_session():
-    """Initialize workouts in session if not already present."""
-    if 'workouts' not in session:
-        session['workouts'] = {"Warm-up": [], "Workout": [], "Cool-down": []}
+        # Initialize workout dictionary
+        self.workouts = {"Warm-up": [], "Workout": [], "Cool-down": []}
 
-@app.route("/", methods=["GET", "POST"])
-def index():
-    workouts = session.get('workouts')
+        # Create Notebook (Tabs)
+        self.notebook = ttk.Notebook(master)
+        self.notebook.pack(expand=True, fill="both")
 
-    if request.method == "POST":
-        category = request.form.get("category")
-        workout = request.form.get("workout", "").strip()
-        duration_str = request.form.get("duration", "").strip()
+        # Tabs
+        self.log_tab = tk.Frame(self.notebook, bg="white")
+        self.chart_tab = tk.Frame(self.notebook, bg="white")
+        self.diet_tab = tk.Frame(self.notebook, bg="white")
 
-        if not workout or not duration_str or not category:
-            flash("Error: Please fill all fields.", "error")
-            return redirect(url_for('index'))
+        self.notebook.add(self.log_tab, text="🏋️ Log Workouts")
+        self.notebook.add(self.chart_tab, text="📊 Workout Chart")
+        self.notebook.add(self.diet_tab, text="🥗 Diet Chart")
+
+        # Initialize sections
+        self.create_log_tab()
+        self.create_workout_chart_tab()
+        self.create_diet_chart_tab()
+
+    # ------------------ LOG TAB ------------------ #
+    def create_log_tab(self):
+        tk.Label(self.log_tab, text="🏋️ ACEest Fitness & Gym Tracker", font=("Helvetica", 16, "bold"), bg="white").pack(pady=10)
+
+        # Category Selector
+        self.category_var = tk.StringVar(value="Workout")
+        tk.Label(self.log_tab, text="Select Category:", font=("Arial", 12), bg="white").pack()
+        self.category_menu = ttk.Combobox(self.log_tab, textvariable=self.category_var, values=list(self.workouts.keys()), state="readonly")
+        self.category_menu.pack(pady=5)
+
+        # Workout Input Fields
+        input_frame = tk.Frame(self.log_tab, bg="white")
+        input_frame.pack(pady=10)
+
+        tk.Label(input_frame, text="Exercise:", font=("Arial", 11), bg="white").grid(row=0, column=0, padx=5, pady=5)
+        self.workout_entry = tk.Entry(input_frame, width=25)
+        self.workout_entry.grid(row=0, column=1, padx=5, pady=5)
+
+        tk.Label(input_frame, text="Duration (min):", font=("Arial", 11), bg="white").grid(row=1, column=0, padx=5, pady=5)
+        self.duration_entry = tk.Entry(input_frame, width=10)
+        self.duration_entry.grid(row=1, column=1, padx=5, pady=5)
+
+        # Buttons
+        button_frame = tk.Frame(self.log_tab, bg="white")
+        button_frame.pack(pady=10)
+
+        tk.Button(button_frame, text="Add Session", command=self.add_workout, width=20, bg="#28a745", fg="white").grid(row=0, column=0, padx=5)
+        tk.Button(button_frame, text="View Summary", command=self.view_summary, width=20, bg="#007bff", fg="white").grid(row=0, column=1, padx=5)
+
+        # Status Bar
+        self.status_label = tk.Label(self.log_tab, text="Welcome! Log your first session.", bd=1, relief=tk.SUNKEN, anchor=tk.W, bg="#f8f9fa")
+        self.status_label.pack(side=tk.BOTTOM, fill=tk.X)
+
+    def add_workout(self):
+        """Add a workout entry to the log."""
+        category = self.category_var.get()
+        workout = self.workout_entry.get().strip()
+        duration_str = self.duration_entry.get().strip()
+
+        if not workout or not duration_str:
+            messagebox.showerror("Input Error", "Please enter both exercise and duration.")
+            return
 
         try:
             duration = int(duration_str)
-            if duration <= 0:
-                flash("Error: Duration must be a positive number.", "error")
-                return redirect(url_for('index'))
         except ValueError:
-            flash("Error: Duration must be a valid number.", "error")
-            return redirect(url_for('index'))
+            messagebox.showerror("Input Error", "Duration must be a number.")
+            return
 
         entry = {
             "exercise": workout,
             "duration": duration,
             "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         }
-        workouts[category].append(entry)
-        session['workouts'] = workouts  # Save back to session
+        self.workouts[category].append(entry)
 
-        flash(f"Success: '{workout}' added to {category}!", "success")
-        return redirect(url_for('index'))
+        self.workout_entry.delete(0, tk.END)
+        self.duration_entry.delete(0, tk.END)
+        self.status_label.config(text=f"Added {workout} ({duration} min) to {category}!")
+        messagebox.showinfo("Success", f"{workout} added to {category} category successfully!")
 
-    # For a GET request, calculate summary
-    total_time = sum(e['duration'] for sessions in workouts.values() for e in sessions)
+    def view_summary(self):
+        """Show a categorized summary of all sessions."""
+        if not any(self.workouts.values()):
+            messagebox.showinfo("Summary", "No sessions logged yet!")
+            return
 
-    if total_time < 30:
-        motivational_note = "Good start! Keep moving 💪"
-    elif total_time < 60:
-        motivational_note = "Nice effort! You're building consistency 🔥"
-    else:
-        motivational_note = "Excellent dedication! Keep up the great work 🏆"
+        summary_window = tk.Toplevel(self.master)
+        summary_window.title("Workout Summary")
+        summary_window.geometry("450x400")
 
-    return render_template("index.html",
-                           workouts=workouts,
-                           total_time=total_time,
-                           motivational_note=motivational_note)
+        tk.Label(summary_window, text="Session Summary", font=("Helvetica", 14, "bold")).pack(pady=10)
+
+        total_time = 0
+        for category, sessions in self.workouts.items():
+            tk.Label(summary_window, text=f"{category}:", font=("Arial", 12, "bold"), fg="#007bff").pack(anchor="w", padx=10)
+            if sessions:
+                for i, entry in enumerate(sessions, 1):
+                    tk.Label(summary_window, text=f" {i}. {entry['exercise']} - {entry['duration']} min", font=("Arial", 11)).pack(anchor="w", padx=25)
+                    total_time += entry['duration']
+            else:
+                tk.Label(summary_window, text="  No sessions recorded.", font=("Arial", 11, "italic"), fg="#888").pack(anchor="w", padx=25)
+
+        tk.Label(summary_window, text=f"\nTotal Time Spent: {total_time} minutes", font=("Arial", 12, "bold"), fg="#28a745").pack(pady=10)
+
+        # Motivational Note
+        if total_time < 30:
+            msg = "Good start! Keep moving 💪"
+        elif total_time < 60:
+            msg = "Nice effort! You're building consistency 🔥"
+        else:
+            msg = "Excellent dedication! Keep up the great work 🏆"
+        tk.Label(summary_window, text=msg, font=("Arial", 12, "italic"), fg="#555").pack(pady=5)
+
+    # ------------------ WORKOUT CHART TAB ------------------ #
+    def create_workout_chart_tab(self):
+        tk.Label(self.chart_tab, text="🏋️ Personalized Workout Chart", font=("Helvetica", 16, "bold"), bg="white").pack(pady=10)
+
+        chart_data = {
+            "Warm-up": ["5 min Jog", "Jumping Jacks", "Arm Circles", "Leg Swings", "Dynamic Stretching"],
+            "Workout": ["Push-ups", "Squats", "Plank", "Lunges", "Burpees", "Crunches"],
+            "Cool-down": ["Slow Walking", "Static Stretching", "Deep Breathing", "Yoga Poses"]
+        }
+
+        for category, exercises in chart_data.items():
+            tk.Label(self.chart_tab, text=f"{category} Exercises:", font=("Arial", 13, "bold"), bg="white", fg="#007bff").pack(anchor="w", padx=20, pady=5)
+            for ex in exercises:
+                tk.Label(self.chart_tab, text=f"• {ex}", font=("Arial", 11), bg="white").pack(anchor="w", padx=40)
+
+    # ------------------ DIET CHART TAB ------------------ #
+    def create_diet_chart_tab(self):
+        tk.Label(self.diet_tab, text="🥗 Best Diet Chart for Fitness Goals", font=("Helvetica", 16, "bold"), bg="white").pack(pady=10)
+
+        diet_plans = {
+            "Weight Loss": ["Oatmeal with Fruits", "Grilled Chicken Salad", "Vegetable Soup", "Brown Rice & Stir-fry Veggies"],
+            "Muscle Gain": ["Egg Omelet", "Chicken Breast", "Quinoa & Beans", "Protein Shake", "Greek Yogurt with Nuts"],
+            "Endurance": ["Banana & Peanut Butter", "Whole Grain Pasta", "Sweet Potatoes", "Salmon & Avocado", "Trail Mix"]
+        }
+
+        for goal, foods in diet_plans.items():
+            tk.Label(self.diet_tab, text=f"{goal} Plan:", font=("Arial", 13, "bold"), bg="white", fg="#28a745").pack(anchor="w", padx=20, pady=5)
+            for food in foods:
+                tk.Label(self.diet_tab, text=f"• {food}", font=("Arial", 11), bg="white").pack(anchor="w", padx=40)
 
 if __name__ == "__main__":
-    # Host must be '0.0.0.0' to be accessible from outside the container
-    app.run(host="0.0.0.0", port=5000, debug=True)
+    root = tk.Tk()
+    app = FitnessTrackerApp(root)
+    root.mainloop()
