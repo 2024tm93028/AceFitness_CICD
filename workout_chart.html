@@ -3,11 +3,11 @@
 {% block title %}Workout Chart - ACEestFitness{% endblock %}
 
 {% block content %}
-    <h1>🏋️ Personalized Workout Chart</h1>
+    <h1>💡 Personalized Workout Plan</h1>
     {% for category, exercises in chart_data.items() %}
-        <h3>{{ category }} Exercises:</h3>
+        <h3>🔥 {{ category }}</h3>
         <ul class="chart-list">
-            {% for ex in exercises %}<li>• {{ ex }}</li>{% endfor %}
+            {% for ex in exercises %}<li>   • {{ ex }}</li>{% endfor %}
         </ul>
     {% endfor %}
 {% endblock %}

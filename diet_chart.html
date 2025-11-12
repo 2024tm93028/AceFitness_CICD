@@ -3,11 +3,11 @@
 {% block title %}Diet Chart - ACEestFitness{% endblock %}
 
 {% block content %}
-    <h1>🥗 Best Diet Chart for Fitness Goals</h1>
+    <h1>🥗 Best Diet Guide for Fitness Goals</h1>
     {% for goal, foods in diet_plans.items() %}
         <h3>{{ goal }} Plan:</h3>
         <ul class="chart-list">
-            {% for food in foods %}<li>• {{ food }}</li>{% endfor %}
+            {% for food in foods %}<li>   • {{ food }}</li>{% endfor %}
         </ul>
     {% endfor %}
 {% endblock %}
