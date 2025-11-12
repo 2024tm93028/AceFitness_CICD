@@ -1,42 +1,29 @@
 pipeline {
     agent any
 
-    environment {
-        // The image name and tag
-        IMAGE_NAME = 'fitness-app:latest'
-    }
-
     stages {
-
-        stage('SonarQube Scan') {
+        stage('Build') {
             steps {
-                script {
-                    // This assumes you have the "SonarQube Scanner for Jenkins" plugin installed,
-                    // a SonarQube server configured in Jenkins, and a sonar-project.properties file in your project root.
-                    // Replace 'your-sonarqube-server-name' with the name of your SonarQube server configuration in Jenkins.
-                    withSonarQubeEnv('SonarLocalConfig') {
-                        bat "${tool 'SonarQubeScanner'}/bin/sonar-scanner"
-                    }
+                sh 'docker build -t flask-app:latest .'
+            }
+        }
+        stage('Test') {
+            steps {
+                sh 'pytest --maxfail=1 --disable-warnings -q'
+            }
+        }
+        stage('SonarQube Analysis') {
+            steps {
+                // Assuming SonarQube Scanner CLI is installed and configured
+                withSonarQubeEnv('MySonarQube') {
+                    sh 'sonar-scanner'
                 }
             }
         }
-        
-        stage('Build Docker Image') {
-            steps {
-                script {
-                    // Set up Minikube Docker environment for Windows
-                    bat 'minikube -p minikube docker-env --shell=cmd > minikubeEnv.cmd'
-                    bat 'call minikubeEnv.cmd'
-                    bat "docker build -t %IMAGE_NAME% ."
-                }
-            }
-        }
-
         stage('Deploy to Minikube') {
             steps {
-                bat 'kubectl apply -f deployment.yaml'
-                bat 'kubectl apply -f service.yaml'
-                bat 'kubectl rollout status deployment/fitness-app-deployment'
+                sh 'kubectl apply -f kubernetes/deployment.yaml'
+                sh 'kubectl apply -f kubernetes/service.yaml'
             }
         }
     }

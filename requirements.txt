@@ -1,4 +1,1 @@
-matplotlib
-reportlab
 flask
-gunicorn
