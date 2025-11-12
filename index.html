@@ -23,7 +23,7 @@
             width: 100%;
             max-width: 600px;
         }
-        h1, h2 {
+        h1, h2, h3 {
             color: #333;
             text-align: center;
         }
@@ -35,7 +35,7 @@
             margin-bottom: 5px;
             font-weight: bold;
         }
-        input[type="text"], input[type="number"] {
+        input[type="text"], input[type="number"], select {
             width: calc(100% - 20px);
             padding: 10px;
             border: 1px solid #ccc;
@@ -75,6 +75,15 @@
             border-radius: 5px;
             margin-bottom: 8px;
         }
+        .summary {
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+        .summary p {
+            font-size: 1.1em;
+        }
     </style>
 </head>
 <body>
@@ -92,13 +101,36 @@
         {% endwith %}
 
         <form action="/" method="post">
+            <div class="form-group">
+                <label for="category">Category:</label>
+                <select id="category" name="category" required>
+                    <option value="" disabled selected>Select a category</option>
+                    <option value="Warm-up">Warm-up</option>
+                    <option value="Workout">Workout</option>
+                    <option value="Cool-down">Cool-down</option>
+                </select>
+            </div>
             <div class="form-group"><label for="workout">Workout:</label><input type="text" id="workout" name="workout" required></div>
             <div class="form-group"><label for="duration">Duration (minutes):</label><input type="number" id="duration" name="duration" min="1" required></div>
-            <button type="submit" class="btn">Add Workout</button>
+            <button type="submit" class="btn">Add Session</button>
         </form>
 
         <h2>Logged Workouts</h2>
-        <ul class="workout-list">{% for entry in workouts %}<li>{{ entry.workout }} - {{ entry.duration }} minutes</li>{% else %}<li>No workouts logged yet.</li>{% endfor %}</ul>
+        {% for category, sessions in workouts.items() %}
+            <h3>{{ category }}</h3>
+            <ul class="workout-list">
+                {% for entry in sessions %}
+                    <li>{{ entry.exercise }} - {{ entry.duration }} min <small>({{ entry.timestamp }})</small></li>
+                {% else %}
+                    <li>No sessions recorded.</li>
+                {% endfor %}
+            </ul>
+        {% endfor %}
+
+        <div class="summary">
+            <p><strong>Total Time Spent:</strong> {{ total_time }} minutes</p>
+            <p><em>{{ motivational_note }}</em></p>
+        </div>
     </div>
 </body>
 </html>
