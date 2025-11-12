@@ -1,23 +1,28 @@
-# Flask App Boilerplate
+## ACEestFitness and Gym
 
-## Features
+This is a simple Flask web application to track workouts.
 
-- Python Flask webserver
-- Dockerized for container deployment
-- Minikube + Kubernetes manifests for local clusters
-- Pytest for unit testing
-- Jenkins pipeline for CI/CD
-- SonarQube integration for code quality (locally)
+### Running the application locally
 
-## Quickstart
+1.  **Set up a virtual environment:**
+    ```bash
+    python -m venv venv
+    source venv/bin/activate  # On Windows, use `venv\Scripts\activate`
+    ```
 
-1. **Build and run locally:**
-   ```
-   pip install -r requirements.txt
-   python -m app.app
-   ```
+2.  **Install dependencies:**
+    ```bash
+    pip install -r requirements.txt
+    ```
 
-2. **Run tests:**
+3.  **Run the Flask app:**
+    ```bash
+    python ACEest_Fitness.py
+    ```
+    The application will be available at `http://127.0.0.1:5000`.
+
+### Testing
+
    ```
    pytest
    ```
